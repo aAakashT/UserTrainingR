@@ -1,22 +1,29 @@
 from rest_framework import serializers
-from usertrainerapp.models import  User, TrainingModule, AssignmentTraining, Review, Otp
+from usertrainerapp.models import  User, TrainingModule, Review, Otp
+from django.contrib.auth.models import Group
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'password', 'first_name', 'last_name')
-        extra_kwargs = {'password': {'write_only': True}}
-
+        # extra_kwargs = {'password': {'write_only': True}}
+        
+        # print(group)
         def create(self, validated_data):
             username = validated_data['username']
             email = validated_data['email']
             password = validated_data['password']
+            group = Group.objects.filter(name='User')
+            print(group)
             try:
                 user = User.objects.get(email = email)   
                 return "email already registered kindly SignIn"
             except User.DoesNotExist():
-                user = User.objects.create_user(username = username, password = password, email = email)   
-                return user
+                user = User.objects.create(username = username, email = email)
+                user.set_password(password)
+                user.groups.add(group[0])
+                user.save()   
+                # return user
 
 class LoginSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,19 +34,14 @@ class LoginSerializer(serializers.ModelSerializer):
 class TrainingmoduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = TrainingModule
-        fields = '__all__'    
-        
-class AssignmentTrainingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AssignmentTraining
         fields = '__all__'
+        
+class TrainingAssignmentSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField()        
+    training_module_id = serializers.IntegerField()        
 
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
-        fields = '__all__'
+        fields = ('user', 'team_leader', )
 
-class OtpSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Otp
-        fields = '__all__'         

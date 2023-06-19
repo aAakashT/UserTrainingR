@@ -8,27 +8,48 @@ from usertrainerapp.serializers import UserSerializer, LoginSerializer
 from rest_framework import status
 from rest_framework.response import Response 
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import Group
+from usertrainerapp.models import User
 # Create your views here.
 
-class UserRegistration(generics.GenericAPIView):
+# class UserRegistration(generics.GenericAPIView):
+#     serializer_class = UserSerializer
+
+#     def post(self, request, *args, **kwargs):
+#         serializer = self.get_serializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         user = serializer.save()
+#         return Response({
+#         "user": UserSerializer(user, context=self.get_serializer_context()).data
+#         })
+
+class UserRegistration(ModelViewSet):
     serializer_class = UserSerializer
+    queryset = User.objects.all
 
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        return Response({
-        "user": UserSerializer(user, context=self.get_serializer_context()).data
-        })
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data)
+        serializer.is_valid(raise_exception = True)
+        group = Group.objects.get(name = 'User')
+        self.perform_create(serializer)
+        user = serializer.instance
+        user.groups.add(group)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status = status.HTTP_201_CREATED, headers=headers)
 
+import pdb
 class LoginApi(APIView):
     def post(self, request):
         email = request.data.get('email')
-        print(email)
+        # print(email)
         password = request.data.get('password')
-        print(password)
-        user = authenticate(request, username=email, password=password)
-        print(user)
+        username = request.data.get('username')
+        # print(password)
+        user = User.objects.get(email=email)
+
+        # print(user)
+        # user = authenticate(request, username=username, password=password, email=email)
+        # print(user)
         if user:
             login(request, user)
             session_key = request.session.session_key

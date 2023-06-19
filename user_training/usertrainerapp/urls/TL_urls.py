@@ -15,16 +15,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-from usertrainerapp.views.auth_views import UserRegistration, LoginApi, LogoutApi
-
-from rest_framework.routers import DefaultRouter
-
-router = DefaultRouter()
-router.register(r'api/register', UserRegistration,basename="register")
-
+from usertrainerapp.views.TL_views import  get_users, get_modules, AssignModules
+from django.urls import path
 urlpatterns = [
-    path('api/login/', LoginApi.as_view(), name='login'),
-    path('api/logout/', LogoutApi.as_view(), name='logout'),
-    path('', include(router.urls)),
+    path('get/users/', get_users, name = 'get_users'),
+    path('get/modules/', get_modules, name = 'get_modules'),
+    path('assign/modules/<int:user_id>/', AssignModules.as_view(), name = 'assign_module'),
+    # path('assign/modules/', assign_modules, name = 'assign_module'),
+    # path('assign/modules/', assign_modules, name = 'assign_module'),
+    # path('assign/modules/', assign_modules, name = 'assign_module'),
 ]

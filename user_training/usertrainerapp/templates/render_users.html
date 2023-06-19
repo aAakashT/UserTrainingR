@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<!-- <script src="static/admin-lte/plugins/datatables/jquery.dataTables.js"></script>  -->
+
+<h2>Asset List</h2>
+<div class="card">
+  <div class="card-body">
+    <table id="asset-table" class="table table-striped" style="width: 50%; height: 300px;">
+
+    <thead>
+        <tr>          
+            <th>ID</th>
+            <th>UserName</th>
+            <th>Email</th>
+            <th>is_active</th>
+            <th>created_at</th>
+            <th>actions</th>
+        </tr>
+    </thead>
+    {% for i in users%}
+
+    <tbody>
+    <td>{{i.id}}</td>  
+    <td>{{i.username}}</td>  
+    <td>{{i.email}}</td>  
+    <td>{{i.is_active}}</td>  
+    <td>{{i.created_at}}</td>  
+    </tbody>
+    {% endfor %}
+  </table>
+  {{users}}
+  </div>
+  </div>   
+  
+
+ {% endblock %} 
