@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>User List</title>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+</head>
+<body>
+  <div class="card">
+    <div class="card-body">
+      <button id="api-button" class="btn btn-primary">Open API Endpoint</button>
+      <table id="asset-table" class="table table-striped" style="width: 50%; height: 30px;">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Password</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Modules</th>
+            <th>Reviews</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="api-response"></div>
+
+  <script>
+    $(document).ready(function() {
+      var assetTable = $('#asset-table').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": "{% url 'api_user_list' %}",
+        "columns": [
+          { "data": "id" },
+          { "data": "username" },
+          { "data": "email" },
+          { "data": "password" },
+          { "data": "first_name" },
+          { "data": "last_name" },
+          { 
+            "data": "modules",
+            "render": function(data, type, row, meta) {
+              // Assuming 'modules' is an empty list
+              if (data.length === 0) {
+                return "No modules assigned";
+              } else {
+                // Format the list of modules as a comma-separated string
+                return data.join(", ");
+              }
+            }
+          },
+          { 
+            "data": "reviews",
+            "render": function(data, type, row, meta) {
+              // Assuming 'reviews' is an empty list
+              if (data.length === 0) {
+                return "No reviews";
+              } else {
+                // Format the list of reviews as a comma-separated string
+                var reviewText = data.map(function(review) {
+                  return `User: ${review.user}, Team Leader: ${review.team_leader}`;
+                }).join(", ");
+                return reviewText;
+              }
+            }
+          }
+        ]
+      });
+    });
+  </script>
+  
+</body>
+</html>
+
+
+
+
+
+  <div id="api-response"></div>
+
+  <script>
+   $(document).ready(function() {
+  var baseAssignModuleURL = '/assign/modules/';
+
+  var assetTable = $('#asset-table').DataTable({
+    "processing": true,
+    "serverSide": true,
+    "ajax": "{% url 'get_users' %}",
+    "columns": [
+      { "data": "id" },
+      { "data": "username" },
+      { "data": "email" },
+      {
+        "data": "id",
+        "render": function(data, type, row, meta) {
+          var url = baseAssignModuleURL + data + '/';
+          var link = `<a href="${url}" class="open-module" data-userid="${data}">AssignModules</a>`;
+          return link;
+        }
+      },
+      { 
+            "data": "modules",
+            "render": function(data, type, row, meta) {
+              // Assuming 'modules' is an empty list
+              if (data.length === 0) {
+                return "No modules assigned";
+              } else {
+                // Format the list of reviews as a comma-separated string
+                var reviewText = data.map(function(review) {
+                  return `title: ${review.title}, date: ${review.assigned_date}`;
+                }).join(", ");
+                return reviewText;
+              }
+            }
+          },
+          { 
+            "data": "reviews",
+            "render": function(data, type, row, meta) {
+              // Assuming 'reviews' is an empty list
+              if (data.length === 0) {
+                return "No reviews";
+              } else {
+                // Format the list of reviews as a comma-separated string
+                var reviewText = data.map(function(review) {
+                  return `comment: ${review.comment}, date: ${review.date}`;
+                }).join(", ");
+                return reviewText;
+              }
+            }
+          }
+    ]
+  });
+
+  $(document).on('click', '.open-module', function() {
+    var userId = $(this).data('userid');
+
+    $.ajax({
+      url: `/assign/modules/${userId}/`,
+      method: "GET",
+      success: function(response) {
+        $('#api-response').html(response); // Insert the API response data into the div
+      },
+      error: function(xhr, status, error) {
+        console.log(error);
+      }
+    });
+  });
+});
+
+
+  </script>
+</body>
+</html>

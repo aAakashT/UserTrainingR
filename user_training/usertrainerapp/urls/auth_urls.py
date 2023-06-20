@@ -16,15 +16,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from usertrainerapp.views.auth_views import UserRegistration, LoginApi, LogoutApi
+from usertrainerapp.views.auth_views import UserRegistration, LoginApi, LogoutApi, login_view, register_view
 
 from rest_framework.routers import DefaultRouter
 
-router = DefaultRouter()
-router.register(r'api/register', UserRegistration,basename="register")
+# router = DefaultRouter()
+# router.register(r'api/register', UserRegistration,basename="register")
+# # for i in router.urls:
+# #     print(i)
 
 urlpatterns = [
-    path('api/login/', LoginApi.as_view(), name='login'),
-    path('api/logout/', LogoutApi.as_view(), name='logout'),
-    path('', include(router.urls)),
+    path('api/login/', LoginApi.as_view(), name='login_api'),
+    path('api/logout/', LogoutApi.as_view(), name='logout_api'),
+    path('api/register', UserRegistration.as_view({'post':'create'}), name="register"),
+    path('login/', login_view, name='login'),
+    path('register/user/', register_view, name='register_user'),
 ]

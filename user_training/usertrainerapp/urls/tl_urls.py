@@ -15,11 +15,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from usertrainerapp.views.TL_views import  get_users, get_modules, AssignModules
+from usertrainerapp.views.tl_views import  api_get_users, render_users,api_get_modules, AssignModules, render_modules
 from django.urls import path
 urlpatterns = [
-    path('get/users/', get_users, name = 'get_users'),
-    path('get/modules/', get_modules, name = 'get_modules'),
+    path('get/users/', api_get_users, name = 'get_users'),
+    path('get/modules/', api_get_modules, name = 'get_modules'),
+    path('render/modules/', render_modules, name = 'render_modules'),
+    path('render/users/', render_users, name = 'render_users'),
     path('assign/modules/<int:user_id>/', AssignModules.as_view(), name = 'assign_module'),
     # path('assign/modules/', assign_modules, name = 'assign_module'),
     # path('assign/modules/', assign_modules, name = 'assign_module'),

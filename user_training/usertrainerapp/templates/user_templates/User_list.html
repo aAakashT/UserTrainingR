@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>User List</title>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+</head>
+<body>
+  <div class="card">
+    <div class="card-body">
+      <button id="api-button" class="btn btn-primary">Open API Endpoint</button>
+      <table id="asset-table" class="table table-striped" style="width: 50%; height: 30px;">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>User</th>
+            <th>Teamleader</th>
+            <th>Comment</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Table body content will be added dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="api-response"></div>
+
+  <script>
+   $(document).ready(function() {
+  var baseAssignModuleURL = '/assign/modules/';
+
+  var assetTable = $('#asset-table').DataTable({
+    "processing": true,
+    "serverSide": true,
+    "ajax": "{% url 'get_users' %}",
+    "columns": [
+      { "data": "id" },
+      { "data": "username" },
+      { "data": "email" },
+      {
+        "data": "id",
+        "render": function(data, type, row, meta) {
+          var url = baseAssignModuleURL + data + '/';
+          var link = `<a href="${url}" class="open-module" data-userid="${data}">AssignModules</a>`;
+          return link;
+        }
+      }
+    ]
+  });
+
+  $(document).on('click', '.open-module', function() {
+    var userId = $(this).data('userid');
+
+    $.ajax({
+      url: `/assign/modules/${userId}/`,
+      method: "GET",
+      success: function(response) {
+        $('#api-response').html(response); // Insert the API response data into the div
+      },
+      error: function(xhr, status, error) {
+        console.log(error);
+      }
+    });
+  });
+});
+
+
+  </script>
+</body>
+</html>

@@ -11,7 +11,11 @@ class AssignModuleForm(forms.ModelForm):
     def assign_training(self):
         user = self.cleaned_data['user']
         modules = self.cleaned_data['modules']
-        
+
+class UserRoleTLForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['groups', 'team_leader']
         
     
 
